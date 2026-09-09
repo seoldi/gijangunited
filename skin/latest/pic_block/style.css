@@ -1,0 +1,49 @@
+@charset "utf-8";
+
+/* 새글 스킨 (latest) */
+
+.pic_lt ul {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pic_lt ul li {
+  display: flex;
+  flex-direction: column;
+  width: 24%;
+}
+
+.pic_lt ul li img {
+  width: 100%;
+}
+
+.pic_lt ul li a.text {
+  color: #fff;
+  font-size: 15px;
+  padding-top: 10px;
+}
+
+@media all and (max-width: 1200px) {
+}
+
+@media all and (max-width: 768px) {
+}
+
+@media all and (max-width: 425px) {
+  .pic_lt ul {
+    flex-wrap: wrap;
+  }
+
+  .pic_lt ul li {
+    width: 48%;
+    margin-bottom: 15px;
+  }
+
+  .pic_lt ul li a.text {
+    font-size: 13px;
+  }
+
+  .main_gallery {
+    padding: 50px 0 45px;
+  }
+}
