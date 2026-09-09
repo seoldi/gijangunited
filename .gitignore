@@ -1,0 +1,10 @@
+config.php
+.lib/
+.vscode/
+"index copy.php"
+index\ copy.php
+*.sql
+migrate_*.php
+reset_*.php
+test*.php
+test_*.json

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>기장군민축구단 — Demo</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent: #c8a84b;
+  --bg-dark: #040810;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(ellipse at 65% 30%, #1b2c4a 0%, #091424 40%, #040810 100%);
+  color: #fff;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: .03;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+header {
+  position: relative; z-index: 10;
+  height: 52px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.gh-link, .about-link {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  text-decoration: none;
+  letter-spacing: .04em;
+  transition: color .2s;
+}
+.gh-link:hover, .about-link:hover { color: rgba(255,255,255,.85); }
+
+.gh-link { display: flex; align-items: center; gap: 6px; }
+.gh-link svg { opacity: .6; }
+
+.project-name {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.7);
+  text-transform: uppercase;
+}
+
+.about-link { text-align: right; }
+
+/* ── VIEWER ── */
+.viewer {
+  position: relative; z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: calc(100vh - 52px);
+  padding: 20px 20px 48px;
+}
+
+/* ── ARROW ── */
+.slide-arrow {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.5);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.slide-arrow:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+/* ── DEVICE ── */
+.device-col {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.device-frame {
+  position: relative;
+  background: #0a0f1e;
+  border: 2px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 20px 4px 4px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.5),
+    0 40px 80px rgba(0,0,0,.6),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.device-frame::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 50%; transform: translateX(-50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+}
+
+.device-screen {
+  overflow: hidden;
+  border-radius: 4px;
+  background: #0d142c;
+}
+
+.device-screen iframe {
+  display: block;
+  border: none;
+  transform-origin: top left;
+}
+
+.screen-bottom-fade {
+  position: absolute;
+  bottom: 4px; left: 4px; right: 4px;
+  height: 140px;
+  background: linear-gradient(to bottom, transparent 20%, rgba(4,8,16,.92) 100%);
+  pointer-events: none;
+  z-index: 5;
+  border-radius: 0 0 20px 20px;
+}
+
+/* ── THUMB NAV ── */
+.thumb-nav {
+  position: absolute;
+  bottom: -22px;
+  left: 50%; transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.thumb-btn {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.22);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all .25s;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.thumb-btn.active {
+  width: auto;
+  height: 22px;
+  border-radius: 11px;
+  background: rgba(255,255,255,.88);
+  padding: 0 10px;
+}
+
+.thumb-label {
+  display: none;
+  font-size: 10px;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: .04em;
+}
+
+.thumb-btn.active .thumb-label { display: block; }
+
+/* ── GUIDE OVERLAY ── */
+.guide-overlay {
+  position: fixed; inset: 0;
+  background: rgba(4,8,16,.82);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.guide-box {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  padding: 36px 48px 32px;
+  max-width: 420px;
+  text-align: center;
+}
+
+.guide-emblem {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.guide-box h2 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: 6px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.guide-box p {
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+
+.guide-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.guide-key {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,.65);
+}
+
+.key-badge {
+  flex-shrink: 0;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-family: monospace;
+  color: rgba(255,255,255,.8);
+  min-width: 48px;
+  text-align: center;
+}
+
+.guide-btn {
+  background: var(--accent);
+  color: #0d0a04;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 32px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.guide-btn:hover { opacity: .85; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="gh-link" href="https://github.com/seoldi/gijangunited" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+    GitHub
+  </a>
+  <div class="project-name">기장군민축구단</div>
+  <a class="about-link" href="https://github.com/seoldi" target="_blank">Credits</a>
+</header>
+
+<div class="viewer">
+  <button class="slide-arrow" id="prevBtn">&#8592;</button>
+
+  <div class="device-col">
+    <div class="device-frame" id="deviceFrame">
+      <div class="device-screen" id="deviceScreen">
+        <iframe id="mainFrame" src="" allowfullscreen></iframe>
+      </div>
+      <div class="screen-bottom-fade"></div>
+    </div>
+    <div class="thumb-nav" id="thumbNav"></div>
+  </div>
+
+  <button class="slide-arrow" id="nextBtn">&#8594;</button>
+</div>
+
+<div class="guide-overlay" id="guideOverlay">
+  <div class="guide-box">
+    <div class="guide-emblem">⚽</div>
+    <h2>GIJANG UNITED FC</h2>
+    <p>부산기장군민축구단 공식 홈페이지<br>GnuBoard5 커스텀 테마 포트폴리오</p>
+    <div class="guide-keys">
+      <div class="guide-key">
+        <span class="key-badge">← →</span>
+        <span>화면 전환</span>
+      </div>
+      <div class="guide-key">
+        <span class="key-badge">●●○</span>
+        <span>하단 도트로 페이지 이동</span>
+      </div>
+      <div class="guide-key">
+        <span class="key-badge">ESC</span>
+        <span>이 팝업 닫기</span>
+      </div>
+    </div>
+    <button class="guide-btn" id="guideCloseBtn">시작하기</button>
+  </div>
+</div>
+
+<script>
+var W = 1920, H = 1080;
+var BEZEL_W = 148, BEZEL_H = 90;
+var HEADER_H = 52, THUMB_H = 48;
+var PREFIX = 'gju';
+
+var SCREENS = [
+  { label: '메인',    file: 'https://www.gijangunited.com/' },
+  { label: '단장인사', file: 'https://www.gijangunited.com/bbs/content.php?co_id=welcome' },
+  { label: '엠블럼',  file: 'https://www.gijangunited.com/bbs/content.php?co_id=emblem' },
+  { label: '마스코트', file: 'https://www.gijangunited.com/bbs/content.php?co_id=mascot' },
+  { label: '조직도',  file: 'https://www.gijangunited.com/bbs/content.php?co_id=organization' },
+  { label: '선수단',  file: 'https://www.gijangunited.com/bbs/board.php?bo_table=player' },
+  { label: '경기결과', file: 'https://www.gijangunited.com/bbs/board.php?bo_table=game' },
+  { label: '순위표',  file: 'https://www.gijangunited.com/bbs/board.php?bo_table=ranking' },
+  { label: '갤러리',  file: 'https://www.gijangunited.com/bbs/board.php?bo_table=gallery' },
+  { label: '파트너',  file: 'https://www.gijangunited.com/bbs/board.php?bo_table=partners' },
+];
+
+var curIdx = parseInt(localStorage.getItem(PREFIX + 'Screen') || '0', 10);
+if (curIdx < 0 || curIdx >= SCREENS.length) curIdx = 0;
+
+var frame     = document.getElementById('mainFrame');
+var dFrame    = document.getElementById('deviceFrame');
+var dScreen   = document.getElementById('deviceScreen');
+var thumbNav  = document.getElementById('thumbNav');
+var prevBtn   = document.getElementById('prevBtn');
+var nextBtn   = document.getElementById('nextBtn');
+var guideOverlay  = document.getElementById('guideOverlay');
+var guideCloseBtn = document.getElementById('guideCloseBtn');
+var guideVisible  = false;
+
+// ── Build thumb nav ──
+SCREENS.forEach(function(s, i) {
+  var btn = document.createElement('button');
+  btn.className = 'thumb-btn';
+  btn.innerHTML = '<span class="thumb-label">' + s.label + '</span>';
+  btn.addEventListener('click', function() { goTo(i); });
+  thumbNav.appendChild(btn);
+});
+
+// ── fit() ──
+function fit() {
+  var pad = 20;
+  var availW = window.innerWidth  - pad * 2 - BEZEL_W;
+  var availH = window.innerHeight - pad * 2 - HEADER_H - THUMB_H - BEZEL_H;
+  var scale  = Math.min(availW / W, availH / H);
+
+  frame.style.width  = W + 'px';
+  frame.style.height = H + 'px';
+  frame.style.transform = 'scale(' + scale + ')';
+  frame.style.transformOrigin = 'top left';
+
+  var sw = Math.round(W * scale);
+  var sh = Math.round(H * scale);
+  dScreen.style.width  = sw + 'px';
+  dScreen.style.height = sh + 'px';
+}
+
+// ── goTo() ──
+function goTo(idx) {
+  curIdx = (idx + SCREENS.length) % SCREENS.length;
+  frame.src = SCREENS[curIdx].file;
+  localStorage.setItem(PREFIX + 'Screen', curIdx);
+  updateThumbActive();
+}
+
+function updateThumbActive() {
+  var btns = thumbNav.querySelectorAll('.thumb-btn');
+  btns.forEach(function(b, i) {
+    b.classList.toggle('active', i === curIdx);
+  });
+}
+
+// ── Guide popup ──
+function closeGuide() {
+  guideOverlay.style.display = 'none';
+  guideVisible = false;
+  localStorage.setItem(PREFIX + 'GuideShown', '1');
+}
+
+if (!localStorage.getItem(PREFIX + 'GuideShown')) {
+  guideOverlay.style.display = 'flex';
+  guideVisible = true;
+} else {
+  guideOverlay.style.display = 'none';
+}
+
+guideCloseBtn.addEventListener('click', closeGuide);
+
+// ── Keyboard ──
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { if (guideVisible) closeGuide(); return; }
+  if (guideVisible) return;
+  if (e.key === 'ArrowLeft')  goTo(curIdx - 1);
+  if (e.key === 'ArrowRight') goTo(curIdx + 1);
+});
+
+// ── iframe keyboard bubble ──
+frame.addEventListener('load', function() {
+  try {
+    frame.contentDocument.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Escape') {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: e.key, bubbles: true }));
+      }
+    });
+  } catch (ignore) {}
+});
+
+// ── Init ──
+fit();
+goTo(curIdx);
+window.addEventListener('resize', fit);
+
+prevBtn.addEventListener('click', function() { goTo(curIdx - 1); });
+nextBtn.addEventListener('click', function() { goTo(curIdx + 1); });
+</script>
+</body>
+</html>
