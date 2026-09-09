@@ -1,6 +1,6 @@
 # ⚽ 기장군민축구단 (Gijang United FC)
 
-<a href="https://seoldi.github.io/gijangunited/demo.html" target="_blank">👉 데모 보기 (Demo)</a> &nbsp;|&nbsp;
+<a href="https://seoldi.github.io/gijangunited/demo.html" target="_blank">👉 데모 보기 (16 pages)</a> &nbsp;|&nbsp;
 <a href="https://www.gijangunited.com/" target="_blank">🌐 실운영 사이트</a>
 
 ---
