@@ -123,3 +123,16 @@
     </div>
   </div>
 </header>
+<script>
+(function () {
+  document.querySelectorAll('a[href$=".html"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var file = 'static/' + a.getAttribute('href');
+      if (window.parent !== window) {
+        e.preventDefault();
+        window.parent.postMessage({ gjuNav: file }, '*');
+      }
+    });
+  });
+})();
+</script>

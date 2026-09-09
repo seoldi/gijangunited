@@ -438,6 +438,15 @@ window.addEventListener('resize', fit);
 
 prevBtn.addEventListener('click', function() { goTo(curIdx - 1); });
 nextBtn.addEventListener('click', function() { goTo(curIdx + 1); });
+
+// iframe 내 메뉴 링크 클릭 → demo 네비게이션 연동
+window.addEventListener('message', function(e) {
+  if (!e.data || !e.data.gjuNav) return;
+  var file = e.data.gjuNav;
+  for (var i = 0; i < SCREENS.length; i++) {
+    if (SCREENS[i].file === file) { goTo(i); return; }
+  }
+});
 </script>
 </body>
 </html>
